@@ -480,7 +480,7 @@ subrExample     PUSH {R4,R5,LR}
 * FIFO
 * `PUSH()` pushes low Registers and R14 (`LR`)
   *  **no other** higher registers
-  *  Lowest register stored first
+  *  Lowest register stored first **The first one to get poped so at the top**
 * `POP()` pops low registers  
   * and`PC` (R15) exclusivly
   * lowest register reloaded first
