@@ -65,7 +65,149 @@ The generated Programm then loaded in to the `code area` in memory (RAM) for us 
 <img src="resources/little_and_big_endian.png">
 
 ## Object File Sections
-// todo
+// todo page 47 in ct1_02
+
+
+# Data Transfer Instructions
+* There are 3 different types of data transfer
+    1. Register to Register 
+    2. Loading Literals (adress from memory)
+    3. Loading Data (data from memory)
+
+## MOV
+* copy register value to anohter register. 
+* High registers (R8-R12) sind möglich
+* statusflags do **not** get updated
+```
+MOV R9 ,  R1 ; kopiere R1 zu R9
+MOV R11, R12 ; kopiere R12 zu R11
+```
+## MOVS (register)
+* copy register value to another.
+* **Only** low registers (R0-R7)
+* Statusflag gets updated
+* Only works for 8 bit asignments
+```
+MOVS R0, R1    ; copy R1 to R0
+MOVS R0, #0xFF ; copy #FF to R0
+MOVS R0, #255  ; copy 255 to R0
+
+MY_CONST EQU 0x12 ; muss <= 8 bit sein
+MOVS R0, #MY_CONST 
+```
+## LDR loading literals
+* indirect access relative to PC
+* PC offset \<imm>
+* if Pc not word-aligned align on upper word access
+* The opcode of `LDR R1 [PC,#4]` is located between the Adress `0x2000'0000`
+to `0x2000'0001` so the `PC` points to `0x2000'0002`.\
+Because this adress isn't devidable by 4 it's changed to `0x0200'0004`
+* From there on 4 is added 
+
+### load litrals without PC
+* In this case the assembler calculates the offset. 
+```
+00000018 4B01           LDR R3,myLit ; hier wird der Offset zur Adresse 0x0000'0020 automatisch berechnet
+...
+00000020 12345678 myLit DCD 0x12345678
+00000024 9ABCDEF0       DCD 0x9ABCDEF0
+```
+* Here with pseudo-instructions:  (assembler converts them to something like `LDR R0,[PC,#0x04]`)
+```
+LDR R0,=var         ; load address which points to var
+LDR R0,=MY_CONSTANT ; load MY_CONSTANT into register R0
+LDR R0,=0xFFF       ; load hex value into register R0
+LDR R0,=4095        ; load integer value into register R0
+```
+### Load data from Memory
+* `LDR`: Load one word (4byte)
+* `LDRH`: Load only one half-word (2byte)
+* `LDRB`: Load only one byte
+```
+LDR R1, [R0]      ; load data from address in register R0 into register R1
+LDR R1, [R0,#4]   ; address offset of 4 bytes
+LDR R1, [R0,#0x4] ; address offset of 4 bytes written in hex
+LDR R1, [R0,R2]   ; address offset read from register R2
+```
+
+## STR (storing data)
+* indirect adressing with immediate offset
+  * Offset range 0-124d (0x7C)
+* **Only** low registers
+* `STR`: store one word (4 byte)
+* `STRH`: store only one half-word (2 byte) 
+* `STRB`: Store only one byte 
+
+```
+STR R1, [R0]      ; store R1 at address from register R0
+STR R1, [R0,#0x4] ; address offset of 4 bytes in hex
+STR R1, [R0,#4]   ; address offset of 4 bytes as integer
+STR R1, [R0,R2]   ; address offset read from register R2
+```
+
+## EQU
+* symbolic definition of literals and constants
+* Doesn't need to be defined in a specific `area`
+```
+MY_CONST EQU 0xE ; hex number
+MY_CONST EQU 15  ; normal number
+``` 
+
+## NOP
+No operation does litteraly nothing
+
+# Array
+* array in assembly: 
+```
+byte_array
+        DCB     0xAA, 0xBB, 0xCC, 0xDD
+        DCB     0xEE, 0xFF
+
+// accessing the array
+            ...
+            MOVS    R0,#0X12    // Load value
+            LDR     R1,adr_b    // get addres of array start
+            STRB    R0,[R1,#3]  // Store value on offset #3 (args[3])
+            ...
+adr_b       DCD     byte_array
+```
+* Same in C
+```C
+static unit8_t byte_array[] = 
+        {0xAA, 0xBB, 0xCC, 0xDD
+         0xEE, 0xFF};
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
