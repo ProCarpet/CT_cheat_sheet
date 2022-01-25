@@ -180,25 +180,85 @@ static unit8_t byte_array[] =
 
 
 
+# Arithmetic Operations 
+## Flags
+* the Processor doesn't know if you calculate with `signed (V)` or `unsigned (U)` numbers.
 
+```
+Flag        Meaning     Action      Operands
+Negative    MSB = 1     N = 1       signed
+Zero        Reuslt =0   Z = 1       signed, unsigned
+Carry       Carry       C = 1       unsigned
+Overflow    Overflow    V = 1       signed
+```
 
+## ADDS
+* adds the content of two registers
+* only low registers
+* updates flags
 
+```
+ADDS    R1,R2,R3    // R3 = R2 + R1
+ADDS    R1,R2       // R1 = R1 + R2
+ADDS    R1,#4       // R1 = R1 + 4 (#<imm8>)
+```
 
+## ADD 
+* adds the content of two registers
+* high and low registers
+```
+ADD     R1,R1,R2    // R1 = R1 + R2  (low reg)
+ADD     R9,R10      // R9 = R9 + R10 (high reg)
+```
 
+## Negative numbers
 
+<img src="resources/signed_unsigned.png"><img src="resources/signed_unsigned_clock.png">
 
+### negation of a number
+* `-a = 0 - a` 
+* Wir bilden das 2er Kompliemnt der zahl 
+* 2er Kompliment bilden manuell:
+  * Mit dem LSB anfangen  (rechts)
+  * So lange 0en schreiben bis eine 1 in der Zahl ist
+  * Bei der 1 eine 1 schreiben und den rest der Zahl invertieren
+* 2er Kompliment bilden manuell 2:
+* Zahl invertieren
+* \+ 1 rechnen
+```
+4  = 0100
+-4 = 1100
+```
 
+## Addition and flags 
 
+### Signed 
+* V = 1 indicates overflow
+* C irrelevant
+  
+<img src="resources/addition_carrie.png">
 
+### Unsigned
+* C = 1 indicates overflow
+* V irrelevant
 
+```
+    1111
+  + 0001
+    ----
+   10000 -> C = 1 
+```
 
+## Subtraction and flags
+* Subtraction is just addiont with 2nd compliment 
 
+### Signed
+* `V = 0 inicates overflow`
+* C irrelevant
 
-
-
-
-
-
+### Unsigned
+* C = 0 inicates borrow 
+* V irrelevant 
 
 
 
