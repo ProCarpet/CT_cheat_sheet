@@ -21,7 +21,7 @@
 * Bus Interface
 
 ## Instruction set and programm execution
-<img src="resources/instructin_set_label.png">
+<img src="resources/instructin_set_label.PNG">
 
 * The assbemlber converts each human readable Assembly instruction to a 16-bit (2byte) opcode.
   * Because of this the Memory Adress always increments by two. 
@@ -38,7 +38,7 @@ The generated Programm then loaded in to the `code area` in memory (RAM) for us 
     * Then the insturction in the Instruction Register `IR` gets executed
     * The process then repeats itself starting at loading the next instruction from the `PC`
 
-<img src="resources/programm_execution.png">
+<img src="resources/programm_execution.PNG">
 
 ## Memory Map
 <img src="resources/memory_map.png">
