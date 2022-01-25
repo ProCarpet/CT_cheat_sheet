@@ -2,7 +2,7 @@
 
 ## CPU Model
 
-<img src="resources/cpu_model.png">
+<img src="resources/cpu_model.PNG">
 
 * 16 Core Registers:
   * Each 32-bit wide
