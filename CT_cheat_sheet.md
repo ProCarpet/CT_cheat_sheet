@@ -522,3 +522,93 @@ subrExample     PUSH {R4,R5,LR}
 0000000C    9B02    LDR R6,[SP,#8]
 0000000E    B003    ADD SP,SP,#12
 ```
+# Parameter passing 
+# Modular coding Linking
+
+## `.h` file
+* definition of the module interface
+  * `Declares` what functionality is available to the client of the code
+
+**utils_ctboard.h**
+```C
+#ifndef _UTILS_CTBOARD
+#define _UTILS_CTBOARD
+
+#include <stdint.h>
+
+/*
+* Some comment 
+*/
+uint8_t  read_byte(uint32_t address);
+uint16_t read_halfword(uint32_t address);
+uint32_t read_word(uint32_t address);
+uint64_t read_doubleword(uint32_t address);
+
+#endif
+
+```
+
+
+## `.c` file
+* Implementation of module
+  * `Defines` gives the function it body
+  * Proivdes the fucntionality behind the interface
+  * An interface ma have alternative implementations 
+
+**utils_board.c**
+```C
+#include <stdint.h>
+#include "utils_ctboard.h"
+
+/*
+ * See header file
+ */
+uint8_t read_byte(uint32_t address)
+{
+    uint8_t *pointer;
+    pointer = (uint8_t *)address;
+    return *pointer;
+}
+....
+```
+
+## `.o` file
+**object file**
+* Contains all compiled data of module
+  * Code section
+    * code and constant data of the module, based at adress `0x0`
+  * Data section
+    * All global variables of the module, based at address `0x0`
+  * Symbol table
+    * All symbols with their attributes like global/local, reference, etc.
+  * Relocation table
+    * Which bytes of the data and code section need to be adjusted (and how)\
+    after merging the secionts in the linking process
+
+## `.elf` file
+**ELF = Executable and Linkable Format**
+* Contains all linked data of the program
+  * Code section
+    * Code and constant data of the program
+  * Data section
+    * All global variables of the program
+      * All symbols with their attributes like global/local etc. 
+
+## external linkage 
+squre = external linkage 
+<img src="resources/external_linkage.png"> 
+
+## Linker 
+* Merge object file and `data sections`
+  * Place all data sections of the individual objevt files into one data\
+    section of the executable file
+* Merge object file `code sections`
+  * Place all code sections of the individual objevt files into one code\
+    section of the executable file
+* Resolve used `external symbols`
+  * Search missing addresses of used external symbols
+* Relocate addresses
+  * Adjust used addresses since merging the sections invalidated the\
+    original addresses
+
+<img src="resources/linker.png"> 
