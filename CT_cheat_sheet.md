@@ -246,14 +246,8 @@ ADD     R9,R10      // R9 = R9 + R10 (high reg)
 * Wenn wir also 6+2 `C = 0` **4 bit zahl! 0->15**
 * Wenn wir also 6 + 12 `C = 1` **4 bit zahl! 0->15**
 
-```
-    1111
-  + 0001
-    ----
-   10000 -> C = 1 
-```
 
-## Subtraction and flags
+## SUBS Subtraction and flags 
 * Subtraction is just addiont with 2nd compliment 
 
 ### Signed
@@ -307,26 +301,106 @@ LSRS R0,R1,#1 // (/2)       ASRS R0,R1,#1 // (/2)
 LSRS R0,R1,#2 // (/4)       ASRS R0,R1,#2 // (/4)
 ```
 
+# Branch Instructions 
+* Branches **may** change the PC
+* non-linear execution of programms. 
+<img src="resources/branch_instruction.png">
 
+# Unconditional Branches
+* Bnach always 
 
+## B (immediate)
+* Unconditional 
+* Direct  (target adress part of instruction)
+* Relative to `PC`
+  * imm11:0
+  * Offsets from -2048d to 2046d
 
+``` 
+00000002 2112 back    MOVS R1,#0x12
+00000004 2029         MOVS R0,#0x29
+00000006 E003         B forward       ; jump to forward
+00000008 BF00         NOP
+0000000A BF00         NOP
+0000000C BF00         NOP
+0000000E BF00         NOP
+00000010 1A09 forward SUBS R1,R1,R0
+00000012 E7F6         B back          ; jump to back
+```
 
+## BX 
+* Unconditional 
+* Register Rm holds target
+* Indirect (target adress in register)
+* Absolute (no back jump)
 
+``` 
+00000014 4802         LDR R0,=jmpaddr
+00000016 4700         BX R0           ; jump to "jmpaddr"
+00000018 BF00         NOP
+0000001A BF00         NOP
+0000001C 3013 jmpaddr ADDS R0,R0,#0x13
+0000001E BF00         NOP
+```
 
+## Conditional Branches
+* Branch only if condition is met
+* Flag-dependent branches
+  * `unsigned` operations
+    * higher and lower
+  * `signed` operations
+    * greater and less 
 
+### Flag-dependent
+<img src="resources/flag_dependent.png">
 
+### Arithmetic - **unsigned**
 
+<img src="resources/arithmetic_unsigned.png"> 
 
+### Arithmetic - **Signed**
 
+<img src="resources/arithmetic_signed.png">
 
+## B\<c\> label
+* conditional can be set to something from above E.g.`BEQ`
 
+## CMP
+* Gleich wie `SUBS` aber ohne Resultat zu speichern. 
 
+```
+CMP R0,R1
+BEQ jump ; R0 == R1 (unsigned)
+BNE jump ; R0 != R1 (unsigned)
+BHS jump ; R0 >= R1 (unsigned)
+BLO jump ; R0 <  R1 (unsigned)
+BHI jump ; R0 >  R1 (unsigned)
+BLS jump ; R0 <= R1 (unsigned)
+```
 
+## 
+* Gleich wie `ADDS` aber ohne das Resultat zu speichern. 
+```
+CMN R0,R1
+BEQ jump ; R0 == -R1 (unsigned)
+BNE jump ; R0 != -R1 (unsigned)
+BHS jump ; R0 >= -R1 (unsigned)
+BLO jump ; R0 <  -R1 (unsigned)
+BHI jump ; R0 >  -R1 (unsigned)
+BLS jump ; R0 <= -R1 (unsigned)
+```
 
-
-
-
-
+## TST
+* Testet ob ein spezifisches bit gestzt ist. 
+* Wie `AND` aber ohne das Resultat zu speichern.
+```
+S3_MASK EQU 0x00000008    ; 00001000
+        LDR R2,=S3_MASK
+        LDR R1,=SWITCH_ADDRESS
+        LDR R0,[R1] 
+        TST R0,R2         ; bit S3 = 1 in R0
+        BNE s3_equal_one  ; branch if Z = 0
+```
 
 
 
