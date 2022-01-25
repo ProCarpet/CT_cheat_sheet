@@ -234,13 +234,17 @@ ADD     R9,R10      // R9 = R9 + R10 (high reg)
 
 ### Signed 
 * V = 1 indicates overflow
-* C irrelevant
+* C irrelevant 
+* Wenn wir also 6 + 1 `V = 0 ` **4 bit zahl! 0 -> 7 & -8 -> -1**
+* Wenn wir aber 6 + 14 `V = 1` **4 bit zahl! 0 -> 7 & -8 -> -1**
   
 <img src="resources/addition_carrie.png">
 
 ### Unsigned
 * C = 1 indicates overflow
 * V irrelevant
+* Wenn wir also 6+2 `C = 0` **4 bit zahl! 0->15**
+* Wenn wir also 6 + 12 `C = 1` **4 bit zahl! 0->15**
 
 ```
     1111
@@ -255,14 +259,53 @@ ADD     R9,R10      // R9 = R9 + R10 (high reg)
 ### Signed
 * `V = 0 inicates overflow`
 * C irrelevant
+* Wenn wir also 6-4 `V = 0` **4 bit zahl! 0 -> 7 & -8 -> -1**
+* Wenn wir also 6-14 `V = 1` **4 bit zahl! 0 -> 7 & -8 -> -1**
 
 ### Unsigned
 * C = 0 inicates borrow 
 * V irrelevant 
+* Wenn wir also 6-4 dann `C = 1`  **4 bit zahl! 0->15** // kein underflow 
+* Wenn wir aber 6-14 dann `C = 0` **4 bit zahl! 0->15** // underflow
 
+# Integer Casting
+## Sign extension 4 -> 8bit
+<img src="resources/integer_casting.png">
 
+## SXTB / SXTH (signed values)
+* `SXTB`    Extends an 8-bit value to 32-bit value
+* `SXTH`    Extends an 16-bit value to 32-bit value
+```
+SXTB    R3,R10  // extract the lowest byte of the value in R10 and sign extend it to R3
+SXTH    R2,R3   // extract the lower two bytes of the value in R3 and sign extend it to R2
+```
+## UXTB / UXTH (unsigned values)
+* `UXTB`    Extends an 8-bit value to a 32-bit value
+* `UXTH`    Extends a 16-bit value to a 32-bit value
 
+# Logic and Shift/Rotate
+```
+ANDS        AND
+BICS        Bit Clear
+EORS        XOR
+MVNS        NOT
+ORRS        OR
+```
 
+## LSLS ASRS
+* left shift 
+* divides/multiplys by 2^n
+
+### Multiply signed & unsigned
+```
+LSLS R0,R1,#1   // 
+```
+### Divide by 2^n 
+``` 
+signed                      unsigned
+LSRS R0,R1,#1 // (/2)       ASRS R0,R1,#1 // (/2)
+LSRS R0,R1,#2 // (/4)       ASRS R0,R1,#2 // (/4)
+```
 
 
 
