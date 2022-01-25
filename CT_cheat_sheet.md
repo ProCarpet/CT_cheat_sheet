@@ -402,11 +402,123 @@ S3_MASK EQU 0x00000008    ; 00001000
         BNE s3_equal_one  ; branch if Z = 0
 ```
 
+# Programm structures and control structures
 
+## if-then-else
+* Beispiel: `if (R1 >= 0) { ... } els e{ ... }` mit R1 signed
+ ```
+        CMP R1,#0x0
+        BLT else    // signed less than
+        ...
+        B end_if
+else
+    ...
+end_if
+```
 
+## Do-while
+* Beispiel: do {} while {R1 < 100}
+```
+loop
+    CMP R1,#100
+    BLT loop    // if R1 < 100 go to loop
+```
 
+## For loop
+* Foor Loops are converted into While loops.
+* Beispiel for `(int i = 0; i < 100; i++){ ... }`
 
+```
+    MOVS R4,#100   // amount itterations
+    MOVS R3,#0     
+loop 
+    CMP R3,R4
+    GEQ end     // end loop 
+    ADDS R3,#1  // increment counter
+    ... / do shit
+    B loop
+end
+```
 
+## Switch case
+<img src="resources/switch_statement.png"> 
 
+# DCD/DCB/DCW
 
+# Subroutines and Stack 
+* Terms used by ARM
+  * Routine, subroutine
+    * A fragment of program to which control can be transferred that, on completing its taks, returns control to its caller at an instruction following the call. *Routine*
+    * is used for clarity where there are nested calls: a routine is the *caller* and a subroutine is the *callee*. 
+  * Procedure 
+    * A routine that returns no value (void).
+  * Function
+    * A routine that returns a result value.
 
+## Aufruf mehrere Funktionen Subroutinen
+* `BL <label>` call of a subroutine
+  * Store current PC in LR
+* `BL LR` return from a subroutine 
+* `BLX` store current PC in LR
+
+``` 
+ADDR_LED_31_0   EQU 0x60000100
+LED_PATTERN     EQU 0xA55A5AA5
+
+subrExample     PUSH {R4,R5,LR}
+
+                LDR R4,=ADDR_LED_31_0
+                LDR R5,=LED_PATTERN
+                STR R5,[R4]
+
+                BL write7seg ; aufruf einer subroutine in subroutine
+
+                POP {R4,R5,PC} ; durch das POP wird direkt der PC wieder hergestellt, heisst der return passiert automatisch kein BX LR nötig
+```
+
+## Stack
+* FIFO
+* `PUSH()` pushes low Registers and R14 (`LR`)
+  *  **no other** higher registers
+  *  Lowest register stored first
+* `POP()` pops low registers  
+  * and`PC` (R15) exclusivly
+  * lowest register reloaded first
+* `Stack Area` continous are of RAM
+* `Stack-base` pointer to the begining of the stack
+* `Stackpointer SP` points to the last writen data value
+
+At the begining the Processor fetches initial value of `SP` (now stackbase) at reset  
+from address `0x0000'0000`\
+Stack base is right above the stack area thus the `SP` is decremented before writing the first word.\
+Example: `PUSH {R0}`
+<img src="resources/stack_push.png"> 
+
+### Save LR on Stack
+```
+subrExample     PUSH {R4,R5,LR}
+                ; write pattern to LED's
+                ...
+                BL  write7seg       // cal another subroutine
+
+                POP {R4,R5,LR}
+```
+### add and subtract from SP 
+* immediate offste \<imm>
+* offset range 0-1020d and 0-508d respectively  
+  
+**`PUSH {R2,R3,R6}`**
+```
+00000000    B083    SUB SP,SP,#12   //Because it points to the top
+00000002    9200    STR R2,[SP]
+00000004    9301    STR R3,[SP,#4]
+00000006    9602    STR R4,[SP,#8]
+```
+
+**`POP {R2,R3,R6}`**
+```
+00000008    9A00    LDR R2,[SP]
+0000000A    9B01    LDR R3,[SP,#4]
+0000000C    9B02    LDR R6,[SP,#8]
+0000000E    B003    ADD SP,SP,#12
+```
